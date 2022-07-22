@@ -26,6 +26,7 @@ namespace draw_your_apartment_WPF_
         {
             InitializeComponent();
         }
+        #region member_fields_to_help_in complie_time_and_runtime
         Point LineStartPos = new Point();
         static Point LineEndPos = new Point();
         static Point MovingPoint;
@@ -39,20 +40,27 @@ namespace draw_your_apartment_WPF_
         static int M;//to count vertical windows
         static int N;//to count horizontal doors
         static int O;//to count horizontal windows
-        static bool DeleteElement=false;
+        static bool DeleteElement=false;//to check the if the delete mode is on or off
+        #endregion
+
+        #region handling_on_click_action
+
         private void ElibreCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-        
+
+            //the next two lines to check if mouse is clicked over line or image
             Line l = ElibreCanvas.Children.OfType<Line>().FirstOrDefault(x => x.IsMouseDirectlyOver);
             Image IMG= ElibreCanvas.Children.OfType<Image>().FirstOrDefault(x => x.IsMouseDirectlyOver);
-            if (l == null)
+            if (l == null)//to handle null exceptions
             {
                 l = new Line() { X1=0,X2=0.001,Y1=0,Y2=0.001};
             }
-            if(IMG== null)
+            if(IMG== null)//to handle null exceptions
             {
                 IMG=new Image() { Height=0,Width=0};   
             }
+            #region checking_the_clicked_points_is_it_start_or_end_Line's_point
+
             if (e.LeftButton == MouseButtonState.Pressed && l.IsMouseOver==false&&IMG.IsMouseDirectlyOver==false&& DeleteElement==false)
             {
                 switch (count)
@@ -74,8 +82,11 @@ namespace draw_your_apartment_WPF_
                 }
               
             }
-            
-            if(count == 2 &&DeleteElement==false)
+            #endregion
+
+            #region lines_are_being_drawn_here
+
+            if (count == 2 &&DeleteElement==false)
             {
                 double ratio = (Math.Abs(LineStartPos.Y - LineEndPos.Y)) / (Math.Abs(LineStartPos.X - LineEndPos.X));
 
@@ -96,7 +107,7 @@ namespace draw_your_apartment_WPF_
                 
                 
                 
-                foreach (Line line in ElibreCanvas.Children.OfType<Line>().ToList())//DeleteElement the guide line when clicking left button
+                foreach (Line line in ElibreCanvas.Children.OfType<Line>().ToList()) //Delete the final guide line when clicking left button
                 {
                     if (line.Uid.Contains("guideline"))
                     {
@@ -106,8 +117,10 @@ namespace draw_your_apartment_WPF_
                 }
                 ElibreCanvas.UpdateLayout();
             }
-            
-            ////////////////////////put door over the clicked line
+            #endregion
+
+            #region doors_are_being_generated_here
+
             if (l!=null && l.IsMouseDirectlyOver==true && e.LeftButton == MouseButtonState.Pressed &&DeleteElement==false)
             {
                 
@@ -148,7 +161,10 @@ namespace draw_your_apartment_WPF_
                     ElibreCanvas.UpdateLayout();
                 }
             }
-            ////////////////////////put Window over the clicked Door
+            #endregion
+
+            #region windows_are_being_generated_here
+
             if (IMG != null && IMG.IsMouseDirectlyOver == true && e.LeftButton == MouseButtonState.Pressed&&DeleteElement==false)
             {
                 if (IMG.Uid.Contains("VDoor"))//vertical window is created when vertical door is clicked
@@ -193,6 +209,10 @@ namespace draw_your_apartment_WPF_
                     ElibreCanvas.UpdateLayout();
                 }
             }
+            #endregion
+
+            #region deleting_clicked_elments_occurs_here
+
             if (DeleteElement == true && e.LeftButton == MouseButtonState.Pressed)
             {
                 Line DLTLine = ElibreCanvas.Children.OfType<Line>().ToList().FirstOrDefault(x => x.IsMouseDirectlyOver);
@@ -218,10 +238,13 @@ namespace draw_your_apartment_WPF_
                 }
 
             }
+            #endregion
 
         }
+        #endregion
 
-        
+        #region handling_guide_lines_when_drawing_lines
+
         private void ElibreCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (count == 1 &&DeleteElement==false)
@@ -234,7 +257,7 @@ namespace draw_your_apartment_WPF_
                 }
                 double ratio = (Math.Abs(LineStartPos.Y - MovingPoint.Y)) / (Math.Abs(LineStartPos.X - MovingPoint.X));
 
-                if (ratio > 1)//draw vertical Lines
+                if (ratio > 1)//draw vertical guide Lines
                 {
                     foreach (Line line in ElibreCanvas.Children.OfType<Line>().ToList())
                     {
@@ -248,7 +271,7 @@ namespace draw_your_apartment_WPF_
                     Fakeline = new Line() { Uid=$"guideline{i}", Stroke = SystemColors.GrayTextBrush, X1 = LineStartPos.X, Y1 = LineStartPos.Y, X2 = LineStartPos.X, Y2 = MovingPoint.Y };
                 
                 }
-                else //to draw horizontal guide lines*/
+                else //draw horizontal guide lines
                 {
                     foreach (Line line in ElibreCanvas.Children.OfType<Line>().ToList())
                     {
@@ -269,6 +292,9 @@ namespace draw_your_apartment_WPF_
             }
 
         }
+        #endregion
+
+        #region radio_buttons_to_choose_drawimg_or_deleting_mode
 
         private void RadioButton_Checked_Draw(object sender, RoutedEventArgs e)
         {
@@ -280,5 +306,6 @@ namespace draw_your_apartment_WPF_
             DeleteElement=true;
 
         }
+        #endregion
     }
 }
